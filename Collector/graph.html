@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="/Scripts/jquery.signalR-1.0.1.min.js"></script>
+    <script src="/Scripts/sigma.min.js"></script>
+    <script src="/Scripts/sigma.forceatlas2.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script>
+        $(function () {
+
+            // Init graph
+            var graph = sigma.init(window.graph);
+            graph.startForceAtlas2();
+            var nodes = {};
+
+
+            // Init server connection
+
+            var stats = $.connection.stats;
+
+            // Clients.All.newEvent(from: "page view", to: "btn-kiwi");
+            stats.client.newAction = function (from, to) {
+                $('pre').append(JSON.stringify({ from: from, to: to }) + '\n');
+
+                if (!nodes[to]) {
+                    graph.addNode(to, {
+                        label: to,
+                        color: 'red'
+                    });
+                    nodes[to] = true;
+                }
+
+                if (from) {
+                    if (!nodes[from]) {
+                        graph.addNode(from, {
+                            label: from,
+                            color: 'red'
+                        });
+                        nodes[from] = true;
+                    }
+
+                    graph.addEdge(from + '---' + to, from, to);
+                }
+
+                graph.draw();
+            };
+
+            $.connection.hub.start();
+
+        });
+    </script>
+    <style>
+        #graph {
+            width: 256px;
+            height: 256px;
+        }
+    </style>
+</head>
+<body>
+    <div id="graph"></div>
+    <pre></pre>
+</body>
+</html>

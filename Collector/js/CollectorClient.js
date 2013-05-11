@@ -56,7 +56,8 @@
             docCookies.setItem('s', sessionKey);
         }
         post({
-            referer: document.referrer
+            referer: document.referrer,
+            url: window.location.href
         });
     }
     init();

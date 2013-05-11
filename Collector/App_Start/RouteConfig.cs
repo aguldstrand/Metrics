@@ -20,6 +20,8 @@ namespace Collector
                 url: "collect/{session}",
                 defaults: new { controller = "Collector", action = "Collect", id = UrlParameter.Optional }
             );
+
+            RouteTable.Routes.MapHubs();
         }
     }
 }

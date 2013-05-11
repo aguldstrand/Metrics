@@ -1,4 +1,5 @@
-﻿using Collector.Util;
+﻿using Collector.Hubs;
+using Collector.Util;
 using log4net;
 using Newtonsoft.Json;
 using System;
@@ -47,6 +48,8 @@ namespace Collector.Controllers
 
             var jsonEntry = JsonConvert.SerializeObject(logEntry, Formatting.None);
             log.Info(jsonEntry);
+
+            LogProcessor.instance.Process(session, data);
         }
     }
 }

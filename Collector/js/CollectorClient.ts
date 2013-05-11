@@ -85,10 +85,11 @@ declare function unescape(str:string): string;
 
         // Send page view event
         post({
-            referer: document.referrer
+            referer: document.referrer,
+            url: window.location.href
         });
     }
-
+    
     init();
 
 })(window, $);
