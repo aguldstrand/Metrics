@@ -15,6 +15,19 @@
             graph.startForceAtlas2();
             var nodes = {};
 
+            function addNode(id) {
+                if (!nodes[id]) {
+                    graph.addNode(id, {
+                        label: id,
+                        color: 'red',
+                        size: 5,
+                        x: Math.random() * 128,
+                        y: Math.random() * 128,
+                        cluster: 'c1'
+                    });
+                    nodes[id] = true;
+                }
+            }
 
             // Init server connection
 
@@ -24,27 +37,16 @@
             stats.client.newAction = function (from, to) {
                 $('pre').append(JSON.stringify({ from: from, to: to }) + '\n');
 
-                if (!nodes[to]) {
-                    graph.addNode(to, {
-                        label: to,
-                        color: 'red'
-                    });
-                    nodes[to] = true;
-                }
+                addNode(to);
 
                 if (from) {
-                    if (!nodes[from]) {
-                        graph.addNode(from, {
-                            label: from,
-                            color: 'red'
-                        });
-                        nodes[from] = true;
+                    addNode(from);
+
+                    if (!nodes[from + '---' + to]) {
+                        graph.addEdge(from + '---' + to, from, to);
+                        nodes[from + '---' + to] = true;
                     }
-
-                    graph.addEdge(from + '---' + to, from, to);
                 }
-
-                graph.draw();
             };
 
             $.connection.hub.start();
