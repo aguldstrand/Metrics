@@ -8,12 +8,25 @@
     <script src="/Scripts/sigma.forceatlas2.min.js"></script>
     <script src="/signalr/hubs"></script>
     <script>
+        var graph;
         $(function () {
 
             // Init graph
-            var graph = sigma.init(window.graph);
-            graph.startForceAtlas2();
+            graph = sigma.init(window.graphd);
             var nodes = {};
+
+            var lastLayout;
+            function doLayout() {
+                if (lastLayout) {
+                    clearTimeout(lastLayout);
+                }
+
+                graph.startForceAtlas2();
+
+                lastLayout = setTimeout(function () {
+                    graph.stopForceAtlas2();
+                }, 5000);
+            }
 
             function addNode(id) {
                 if (!nodes[id]) {
@@ -26,7 +39,20 @@
                         cluster: 'c1'
                     });
                     nodes[id] = true;
+
+                    return true;
                 }
+                return false;
+            }
+
+            function addEdge(from, to) {
+                if (!nodes[from + '---' + to]) {
+                    graph.addEdge(from + '---' + to, from, to);
+                    nodes[from + '---' + to] = true;
+
+                    return true;
+                }
+                return false;
             }
 
             // Init server connection
@@ -37,15 +63,15 @@
             stats.client.newAction = function (from, to) {
                 $('pre').append(JSON.stringify({ from: from, to: to }) + '\n');
 
-                addNode(to);
+                var changed = addNode(to);
 
                 if (from) {
-                    addNode(from);
+                    changed = addNode(from) || changed;
+                    changed = addEdge(from, to) || changed;
+                }
 
-                    if (!nodes[from + '---' + to]) {
-                        graph.addEdge(from + '---' + to, from, to);
-                        nodes[from + '---' + to] = true;
-                    }
+                if (changed) {
+                    doLayout();
                 }
             };
 
@@ -54,14 +80,14 @@
         });
     </script>
     <style>
-        #graph {
-            width: 256px;
-            height: 256px;
+        #graphd {
+            width: 768px;
+            height: 512px;
         }
     </style>
 </head>
 <body>
-    <div id="graph"></div>
+    <div id="graphd"></div>
     <pre></pre>
 </body>
 </html>
