@@ -67,7 +67,7 @@ declare function unescape(str:string): string;
     var sessionKey = '{session_key}';
 
     function post(values) {
-        $.post('/collect/' + sessionKey, values || {});
+        $.post('/collect/' + sessionKey, values || {}, 'json');
     }
 
     window['collector'] = post;

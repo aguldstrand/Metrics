@@ -2,11 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="/Scripts/jquery.signalR-1.0.1.min.js"></script>
+    <script src="/Scripts/jquery-1.6.4.min.js"></script>
     <script src="/Scripts/sigma.min.js"></script>
     <script src="/Scripts/sigma.forceatlas2.min.js"></script>
-    <script src="/signalr/hubs"></script>
     <script>
         var graph;
         $(function () {
@@ -55,27 +53,16 @@
                 return false;
             }
 
-            // Init server connection
-
-            var stats = $.connection.stats;
-
-            // Clients.All.newEvent(from: "page view", to: "btn-kiwi");
-            stats.client.newAction = function (from, to) {
-                $('pre').append(JSON.stringify({ from: from, to: to }) + '\n');
-
-                var changed = addNode(to);
-
-                if (from) {
-                    changed = addNode(from) || changed;
-                    changed = addEdge(from, to) || changed;
-                }
-
-                if (changed) {
-                    doLayout();
-                }
-            };
-
-            $.connection.hub.start();
+            $.getJSON('/api/Stats/NavigationPairs')
+                .done(function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        if(graph.getID(data[i].From))
+                        addNode('n1');
+                        addNode('n2');
+                        addEdge('n1', 'n2');
+                        doLayout();
+                    }
+                });
 
         });
     </script>

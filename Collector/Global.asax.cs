@@ -14,8 +14,6 @@ namespace Collector
     {
         protected void Application_Start()
         {
-            Hubs.ActionProcessor.instance.Init();
-
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);

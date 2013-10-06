@@ -1,9 +1,13 @@
 ﻿using Collector.Hubs;
+using Collector.Models;
 using Collector.Util;
 using log4net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -19,7 +23,7 @@ namespace Collector.Controllers
         {
             var session = Guid.NewGuid().ToString("N");
 
-            var js = System.IO.File.ReadAllText(Server.MapPath("~/js/CollectorClient.min.js"));
+            var js = System.IO.File.ReadAllText(Server.MapPath("~/js/CollectorClient.js"));
             js = js.Replace("{session_key}", session);
 
             return Content(js, "application/javascript");
@@ -30,26 +34,30 @@ namespace Collector.Controllers
         [HttpPost]
         public ActionResult Collect(string session)
         {
-            Log(session, Request.Form.AllKeys.ToDictionary(
-                    key => key,
-                    key => Request.Form[key]));
+            JToken data;
+            try
+            {
+                data = JToken.Parse(new StreamReader(Request.InputStream).ReadToEnd());
+            }
+            catch
+            {
+                data = null;
+            }
+
+            Log(session, data);
 
             return Content(string.Empty, "text/plain");
         }
 
-        void Log(string session, Dictionary<string, string> data)
+        void Log(string session, JToken data)
         {
-            var logEntry = new
-            {
-                t = DateTime.UtcNow.ToBinary().ToString("X"),
-                s= session,
-                d= data,
-            };
+            var logEntry = new LogEntry(
+                timeStamp: DateTime.UtcNow,
+                session: session,
+                data: data);
 
-            var jsonEntry = JsonConvert.SerializeObject(logEntry, Formatting.None);
+            var jsonEntry = JsonConvert.SerializeObject(logEntry, Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore }  );
             log.Info(jsonEntry);
-
-            LogProcessor.instance.Process(session, data);
         }
     }
 }

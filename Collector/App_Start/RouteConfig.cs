@@ -21,7 +21,11 @@ namespace Collector
                 defaults: new { controller = "Collector", action = "Collect", id = UrlParameter.Optional }
             );
 
-            RouteTable.Routes.MapHubs();
+            routes.MapRoute(
+                name: "stats",
+                url: "stats/{action}",
+                defaults: new { controller = "Stats", action = "Index", id = UrlParameter.Optional }
+            );
         }
     }
 }
