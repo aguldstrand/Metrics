@@ -2,79 +2,40 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title></title>
-    <script src="/Scripts/jquery-1.6.4.min.js"></script>
-    <script src="/Scripts/sigma.min.js"></script>
-    <script src="/Scripts/sigma.forceatlas2.min.js"></script>
-    <script>
-        var graph;
-        $(function () {
-
-            // Init graph
-            graph = sigma.init(window.graphd);
-            var nodes = {};
-
-            var lastLayout;
-            function doLayout() {
-                if (lastLayout) {
-                    clearTimeout(lastLayout);
-                }
-
-                graph.startForceAtlas2();
-
-                lastLayout = setTimeout(function () {
-                    graph.stopForceAtlas2();
-                }, 5000);
-            }
-
-            function addNode(id) {
-                if (!nodes[id]) {
-                    graph.addNode(id, {
-                        label: id,
-                        color: 'red',
-                        size: 5,
-                        x: Math.random() * 128,
-                        y: Math.random() * 128,
-                        cluster: 'c1'
-                    });
-                    nodes[id] = true;
-
-                    return true;
-                }
-                return false;
-            }
-
-            function addEdge(from, to) {
-                if (!nodes[from + '---' + to]) {
-                    graph.addEdge(from + '---' + to, from, to);
-                    nodes[from + '---' + to] = true;
-
-                    return true;
-                }
-                return false;
-            }
-
-            $.getJSON('/api/Stats/NavigationPairs')
-                .done(function (data) {
-                    for (var i = 0; i < data.length; i++) {
-                        if(graph.getID(data[i].From))
-                        addNode('n1');
-                        addNode('n2');
-                        addEdge('n1', 'n2');
-                        doLayout();
-                    }
-                });
-
-        });
-    </script>
     <style>
-        #graphd {
-            width: 768px;
-            height: 512px;
+        html, body, svg {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
     </style>
 </head>
 <body>
-    <div id="graphd"></div>
-    <pre></pre>
+    <script src="/js/vivagraph.min.js"></script>
+    <script src="/Scripts/jquery-2.0.3.min.js"></script>
+    <script src="/Scripts/jquery.signalR-2.0.0-rc1.min.js"></script>
+    <script src="/signalr/hubs"></script>
+
+    <script>
+
+        $(function () {
+            var graph = Viva.Graph.graph();
+            graph.addLink(1, 2);
+
+            var renderer = Viva.Graph.View.renderer(graph);
+            renderer.run();
+
+
+
+            var stats = $.connection.logProcessor;
+
+            // Clients.All.newEvent(from: "page view", to: "btn-kiwi");
+            stats.client.newAction = function (from, to) {
+                console.log(from, to);
+            };
+
+            $.connection.hub.start();
+        });
+    </script>
 </body>
 </html>

@@ -1,17 +1,18 @@
-﻿using System;
+﻿using Microsoft.AspNet.SignalR;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Collector.Hubs
 {
-    public class LogProcessor
+    public class LogProcessor : Hub
     {
-        public static readonly LogProcessor instance = new LogProcessor();
-
         public event EventHandler<OnActionEventArgs> OnAction;
 
-        private LogProcessor()
-        { }
+        public LogProcessor()
+        {
+
+        }
 
         public void Process(string session, Dictionary<string, string> data)
         {
