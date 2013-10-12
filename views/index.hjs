@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{ title }}</title>
+		<link rel='stylesheet' href='/stylesheets/style.css' />
+		<style type="text/css">
+			body {
+				font-size: 16px;
+			}
+
+			.progress {
+				height: 1em;
+				left: 0px;
+				right: 0px;
+				background: lightgray;
+			}
+
+			.progress-marker {
+				height: 100%;
+				background: yellowgreen;
+			}
+
+			button {
+				float: left;
+				width: 20%;
+				height: 1.6em;
+				padding: 0;
+				border: none;
+				transition: background .15s ease-in-out;
+			}
+
+			button:hover {
+				background: gray;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>{{ title }}</h1>
+
+		{{#questions}}
+		<form method="post" >
+			<h2>{{text}}</h2>
+			<div class="progress">
+				<div class="progress-marker" style="width: {{value}}%" />
+			</div>
+			<button value="1">1</button>
+			<button value="2">2</button>
+			<button value="3">3</button>
+			<button value="4">4</button>
+			<button value="5">5</button>
+		</form>
+		{{/questions}}
+	</body>
+</html>
