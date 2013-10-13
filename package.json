@@ -3,11 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "dependencies": {
     "express": "3.4.0",
     "hjs": "*",
-    "sass": "*"
+    "sass": "*",
+    "node-uuid": "1.4.x",
+    "moment": "2.3.x"
   }
 }

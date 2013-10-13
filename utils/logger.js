@@ -1,0 +1,25 @@
+var fs = require('fs');
+var path = require('path');
+var moment = require('moment');
+
+function Logger(instanceId) {
+	this.instanceId = instanceId;
+}
+
+Logger.prototype = {
+	log: function(data) {
+		var time = moment();
+		var filePath = path.join('logs', time.format('YYYY-MM-DD') + '-' + instanceId);
+
+		fs.appendFile(filePath, JSON.stringify({
+			t: time.format('hh:mm:ss.SSS'),
+			d: data
+		}) + '\n',
+		function(err) {
+			// Do not wait for the data to be written to file
+			console.error(err);
+		});
+	}
+};
+
+module.exports = Logger;
